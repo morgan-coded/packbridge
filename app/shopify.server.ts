@@ -7,6 +7,7 @@ import {
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import prisma from "./db.server";
 import { runFullSync } from "./services/sync.server";
+import { ensureShopSettings } from "./services/shop-settings.server";
 
 // The Shopify app TOML declares api_version = "2026-07". The shipped
 // `ApiVersion` enum in @shopify/shopify-api does not yet include July26 at the
@@ -39,6 +40,17 @@ const shopify = shopifyApp({
       // `registerWebhooks` here to (a) pick up any shop-specific webhooks we
       // add in future phases, and (b) reconcile subscriptions if TOML drifts.
       await shopify.registerWebhooks({ session });
+
+      // Seed shop settings (generates the outbound HMAC signing secret on
+      // first install). Idempotent — safe to re-run on reinstall.
+      try {
+        await ensureShopSettings(session.shop);
+      } catch (error) {
+        console.error(
+          `[packbridge] afterAuth settings bootstrap failed for ${session.shop}:`,
+          error,
+        );
+      }
 
       // Kick off the initial data mirror. Runs inline so the merchant lands
       // on an app home page that already knows its company/variant counts.

@@ -39,13 +39,16 @@ model Session {
 // ---------------------------------------------------------------------------
 
 model Shop {
-  id        String    @id // shop domain, e.g. "my-store.myshopify.com"
-  name      String?
-  plan      String?
-  currency  String?
-  syncedAt  DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id                     String    @id // shop domain, e.g. "my-store.myshopify.com"
+  name                   String?
+  plan                   String?
+  currency               String?
+  webhookUrl             String?   // merchant's outbound destination
+  signingSecret          String?   // HMAC key for outbound payload signatures
+  defaultEnforcementMode String    @default("warn")
+  syncedAt               DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 }
 
 // ---------------------------------------------------------------------------
@@ -146,10 +149,13 @@ model NormalizationEvent {
   sku                 String?
   inputQuantity       Int
   resolvedRuleId      String?
+  packSize            Int?     // copied from resolved rule for stable payloads
   outputQuantity      Decimal?
   outputUnit          String?
-  resultStatus        String   // ok | warn | error | skipped
+  resultStatus        String   // pass | warn | hold | no_rule
   errorCode           String?
+  remainder           Int?     // non-null when NOT_DIVISIBLE
+  enforcementMode     String?
   createdAt           DateTime @default(now())
 
   normalizationJob    NormalizationJob @relation(fields: [normalizationJobId], references: [id], onDelete: Cascade)

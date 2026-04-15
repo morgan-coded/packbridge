@@ -4,13 +4,21 @@ import type {
   HeadersFunction,
   LoaderFunctionArgs,
 } from "react-router";
-import { useFetcher, useLoaderData } from "react-router";
+import { Link, useFetcher, useLoaderData } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 import { runFullSync } from "../services/sync.server";
+import { statusTone } from "./app.jobs._index";
+
+interface RecentJob {
+  id: string;
+  orderName: string;
+  status: string;
+  createdAt: string;
+}
 
 interface LoaderData {
   shopDomain: string;
@@ -18,6 +26,20 @@ interface LoaderData {
   locationCount: number;
   variantCount: number;
   syncedAt: string | null;
+  jobs: {
+    total: number;
+    today: number;
+    completed: number;
+    held: number;
+    failed: number;
+    recent: RecentJob[];
+  };
+}
+
+function startOfToday(): Date {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
 }
 
 export const loader = async ({
@@ -26,11 +48,38 @@ export const loader = async ({
   const { session } = await authenticate.admin(request);
   const shopDomain = session.shop;
 
-  const [shop, companyCount, locationCount, variantCount] = await Promise.all([
+  const [
+    shop,
+    companyCount,
+    locationCount,
+    variantCount,
+    totalJobs,
+    todayJobs,
+    completedJobs,
+    heldJobs,
+    failedJobs,
+    recentJobs,
+  ] = await Promise.all([
     prisma.shop.findUnique({ where: { id: shopDomain } }),
     prisma.syncedCompany.count({ where: { shopDomain } }),
     prisma.syncedCompanyLocation.count({ where: { shopDomain } }),
     prisma.syncedVariant.count({ where: { shopDomain } }),
+    prisma.normalizationJob.count({ where: { shopDomain } }),
+    prisma.normalizationJob.count({
+      where: { shopDomain, createdAt: { gte: startOfToday() } },
+    }),
+    prisma.normalizationJob.count({
+      where: { shopDomain, status: "completed" },
+    }),
+    prisma.normalizationJob.count({ where: { shopDomain, status: "held" } }),
+    prisma.normalizationJob.count({
+      where: { shopDomain, status: "failed" },
+    }),
+    prisma.normalizationJob.findMany({
+      where: { shopDomain },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+    }),
   ]);
 
   return {
@@ -39,6 +88,19 @@ export const loader = async ({
     locationCount,
     variantCount,
     syncedAt: shop?.syncedAt ? shop.syncedAt.toISOString() : null,
+    jobs: {
+      total: totalJobs,
+      today: todayJobs,
+      completed: completedJobs,
+      held: heldJobs,
+      failed: failedJobs,
+      recent: recentJobs.map((j) => ({
+        id: j.id,
+        orderName: j.orderName,
+        status: j.status,
+        createdAt: j.createdAt.toISOString(),
+      })),
+    },
   };
 };
 
@@ -151,21 +213,68 @@ export default function Index() {
         )}
       </s-section>
 
-      <s-section heading="Phase 1 checkpoint">
-        <s-paragraph>
-          Place a B2B test order, then open{" "}
-          <s-link href="/app/test-order">the test-order route</s-link> to verify
-          the purchasing-entity contract. This route is temporary and will be
-          removed after Phase 1 sign-off.
-        </s-paragraph>
+      <s-section heading="Normalization jobs">
+        <s-stack direction="inline" gap="large">
+          <s-stack direction="block" gap="small">
+            <s-text tone="neutral">Total (all time)</s-text>
+            <s-heading>{data.jobs.total}</s-heading>
+          </s-stack>
+          <s-stack direction="block" gap="small">
+            <s-text tone="neutral">Today</s-text>
+            <s-heading>{data.jobs.today}</s-heading>
+          </s-stack>
+          <s-stack direction="block" gap="small">
+            <s-text tone="neutral">Completed</s-text>
+            <s-heading>{data.jobs.completed}</s-heading>
+          </s-stack>
+          <s-stack direction="block" gap="small">
+            <s-text tone="neutral">Held</s-text>
+            <s-heading>{data.jobs.held}</s-heading>
+          </s-stack>
+          <s-stack direction="block" gap="small">
+            <s-text tone="neutral">Failed</s-text>
+            <s-heading>{data.jobs.failed}</s-heading>
+          </s-stack>
+        </s-stack>
+
+        {data.jobs.recent.length > 0 ? (
+          <s-table>
+            <s-table-header-row>
+              <s-table-header>Order</s-table-header>
+              <s-table-header>Status</s-table-header>
+              <s-table-header>When</s-table-header>
+            </s-table-header-row>
+            <s-table-body>
+              {data.jobs.recent.map((j) => (
+                <s-table-row key={j.id}>
+                  <s-table-cell>
+                    <Link to={`/app/jobs/${j.id}`}>{j.orderName}</Link>
+                  </s-table-cell>
+                  <s-table-cell>
+                    <s-badge tone={statusTone(j.status)}>{j.status}</s-badge>
+                  </s-table-cell>
+                  <s-table-cell>
+                    {new Date(j.createdAt).toLocaleString()}
+                  </s-table-cell>
+                </s-table-row>
+              ))}
+            </s-table-body>
+          </s-table>
+        ) : (
+          <s-paragraph>
+            No jobs yet. B2B orders will show up here once processed.
+          </s-paragraph>
+        )}
+
+        <s-link href="/app/jobs">View all jobs →</s-link>
       </s-section>
 
-      <s-section slot="aside" heading="Scope">
-        <s-paragraph>
-          Phase 1 is read-only: sync, orders/create webhook logging, and the B2B
-          checkpoint. Pack rules, normalization, and outbound delivery arrive in
-          Phases 2–4.
-        </s-paragraph>
+      <s-section slot="aside" heading="Quick links">
+        <s-stack direction="block" gap="small">
+          <s-link href="/app/rules">Pack rules</s-link>
+          <s-link href="/app/jobs">Jobs</s-link>
+          <s-link href="/app/settings">Settings</s-link>
+        </s-stack>
       </s-section>
     </s-page>
   );

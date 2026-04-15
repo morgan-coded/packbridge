@@ -1,63 +1,82 @@
 import type { ActionFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
+import { normalizeOrder } from "../services/normalizer.server";
+import { deliverPayload } from "../services/outbound.server";
 
 /**
- * orders/create webhook — Phase 1 logger only.
+ * orders/create — Phase 3 live pipeline.
  *
- * Full B2B normalization happens in Phase 3. For now we just capture the
- * payload so the team can verify the B2B data contract end-to-end.
+ * Flow:
+ *   1. authenticate.webhook → { shop, session, admin, payload, topic }
+ *   2. Skip non-B2B orders (payload.company === null).
+ *   3. Normalize inline (fast; DB queries + a single GraphQL fetch).
+ *   4. Fire-and-forget outbound delivery so retries don't block the webhook
+ *      response. Delivery failures are recorded in OutboundDelivery.
+ *   5. Always return 200 so Shopify doesn't retry — our pipeline has its own
+ *      audit log.
  */
+
+interface OrdersCreatePayload {
+  id?: number | string;
+  name?: string;
+  company?: {
+    id?: number | string;
+    location_id?: number | string;
+  } | null;
+}
+
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { shop, topic, payload } = await authenticate.webhook(request);
+  const { shop, topic, payload, admin, session } =
+    await authenticate.webhook(request);
 
   console.log(`[packbridge] ${topic} received for ${shop}`);
 
-  interface OrderLineItem {
-    id?: number | string;
-    variant_id?: number | string;
-    sku?: string;
-    quantity?: number;
-  }
-  interface OrderCompany {
-    id?: number | string;
-    location_id?: number | string;
-  }
-  interface OrderCreatePayload {
-    id?: number | string;
-    name?: string;
-    company?: OrderCompany | null;
-    line_items?: OrderLineItem[];
-  }
+  const body = payload as OrdersCreatePayload;
+  const orderId = body.id;
 
-  const body = payload as OrderCreatePayload;
-  const company = body.company ?? null;
-
-  if (!company) {
+  if (!body.company) {
     console.log(
-      `[packbridge] order ${body.id ?? "<unknown>"} is not B2B, skipping.`,
+      `[packbridge] order ${orderId ?? "<unknown>"} is not B2B, skipping.`,
     );
-    return new Response();
+    return new Response(null, { status: 200 });
   }
 
-  console.log(
-    `[packbridge] B2B order ${body.id ?? "<unknown>"} (${body.name ?? ""}) for ${shop}`,
-    {
-      companyId: company.id,
-      companyLocationId: company.location_id,
-      lineItems: (body.line_items ?? []).map((li) => ({
-        id: li.id,
-        variantId: li.variant_id,
-        sku: li.sku,
-        quantity: li.quantity,
-      })),
-    },
-  );
+  if (!session || !admin) {
+    // Shop uninstalled between receiving the webhook and processing it.
+    console.warn(
+      `[packbridge] no session/admin for ${shop}; cannot normalize order ${orderId}`,
+    );
+    return new Response(null, { status: 200 });
+  }
 
-  // Also dump the full payload for the checkpoint review.
-  console.log(
-    `[packbridge] full orders/create payload for ${shop}:`,
-    JSON.stringify(body, null, 2),
-  );
+  if (orderId === undefined || orderId === null) {
+    console.warn(`[packbridge] missing order id on ${topic} payload for ${shop}`);
+    return new Response(null, { status: 200 });
+  }
 
-  return new Response();
+  try {
+    const result = await normalizeOrder(admin, shop, String(orderId));
+    console.log(
+      `[packbridge] order ${orderId} normalized: ${result.overallStatus} (${result.events.length} events)`,
+    );
+
+    // Fire-and-forget outbound delivery. The function awaits retries up to
+    // 21s total; we don't want to block the webhook on that. Errors are
+    // persisted to OutboundDelivery, so observability is preserved.
+    void deliverPayload(shop, result).catch((error) => {
+      console.error(
+        `[packbridge] outbound delivery for order ${orderId} threw:`,
+        error,
+      );
+    });
+  } catch (error) {
+    console.error(
+      `[packbridge] normalization failed for order ${orderId}:`,
+      error,
+    );
+    // Swallow the error — the NormalizationJob is marked failed, and Shopify
+    // should not keep retrying a webhook that we'll keep failing to process.
+  }
+
+  return new Response(null, { status: 200 });
 };
