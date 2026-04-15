@@ -8,6 +8,19 @@ const ORDER_B2B_QUERY = `#graphql
     order(id: $orderId) {
       id
       name
+      purchasingEntity {
+        ... on PurchasingCompany {
+          company {
+            id
+            name
+            externalId
+          }
+          location {
+            id
+            name
+          }
+        }
+      }
       lineItems(first: 100) {
         edges {
           node {
@@ -32,7 +45,10 @@ const ORDER_B2B_QUERY = `#graphql
 export interface OrderB2BContext {
   id: string;
   name: string;
-  purchasingEntity?: null;
+  purchasingEntity: {
+    company?: { id: string; name: string; externalId: string | null };
+    location?: { id: string; name: string };
+  } | null;
   lineItems: Array<{
     id: string;
     quantity: number;
