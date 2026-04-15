@@ -2,7 +2,7 @@
 
 client_id = "44c3d749bf3178e865af09d88eb2d91f"
 name = "PackBridge"
-application_url = "https://example.com"
+application_url = "https://packbridge-dev.morganlabs.org"
 embedded = true
 
 [build]
@@ -34,10 +34,10 @@ api_version = "2026-07"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_orders,read_products,read_companies,read_draft_orders"
+scopes = "read_orders,read_products,read_companies,read_draft_orders,read_customers"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [ "https://packbridge-dev.morganlabs.org/api/auth" ]
 
 [product.metafields.app.demo_info]
 type = "single_line_text_field"
