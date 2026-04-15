@@ -2,6 +2,7 @@ import "@shopify/shopify-app-react-router/adapters/node";
 import {
   ApiVersion,
   AppDistribution,
+  BillingInterval,
   shopifyApp,
 } from "@shopify/shopify-app-react-router/server";
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
@@ -14,6 +15,13 @@ import { ensureShopSettings } from "./services/shop-settings.server";
 // time of writing, so we cast the literal. All Admin GraphQL calls use this
 // version by default.
 const PACKBRIDGE_API_VERSION = "2026-07" as ApiVersion;
+
+// Single plan for MVP. Export so routes can reference it by name.
+export const PACKBRIDGE_PLAN = "PackBridge Monthly";
+
+// Flip to `false` before production submission (or gate on NODE_ENV).
+// Dev stores can only approve test charges, so we default to `true`.
+export const BILLING_IS_TEST = process.env.NODE_ENV !== "production";
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -30,6 +38,18 @@ const shopify = shopifyApp({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sessionStorage: new PrismaSessionStorage(prisma) as any,
   distribution: AppDistribution.AppStore,
+  billing: {
+    [PACKBRIDGE_PLAN]: {
+      trialDays: 14,
+      lineItems: [
+        {
+          amount: 99,
+          currencyCode: "USD",
+          interval: BillingInterval.Every30Days,
+        },
+      ],
+    },
+  },
   future: {
     expiringOfflineAccessTokens: true,
   },

@@ -4,9 +4,15 @@ import { boundary } from "@shopify/shopify-app-react-router/server";
 import { AppProvider } from "@shopify/shopify-app-react-router/react";
 
 import { authenticate } from "../shopify.server";
+import { requireBilling } from "../services/billing.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
+  const { billing } = await authenticate.admin(request);
+
+  // Gate every /app/* page behind an active subscription. On a dev store the
+  // `require → request` chain redirects to the Shopify test-charge approval
+  // screen; on a real merchant store, the real approval flow.
+  await requireBilling(billing);
 
   // eslint-disable-next-line no-undef
   return { apiKey: process.env.SHOPIFY_API_KEY || "" };

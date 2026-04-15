@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PackBridge — Privacy Policy</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.6;
+        max-width: 720px;
+        margin: 3rem auto;
+        padding: 0 1.5rem;
+        color: #1f2937;
+        background: #ffffff;
+      }
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 0.25rem;
+      }
+      .muted {
+        color: #6b7280;
+        margin-top: 0;
+        font-size: 0.95rem;
+      }
+      h2 {
+        font-size: 1.15rem;
+        margin-top: 2rem;
+      }
+      ul {
+        padding-left: 1.2rem;
+      }
+      code {
+        background: #f3f4f6;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #0f172a;
+          color: #e2e8f0;
+        }
+        code {
+          background: #1e293b;
+        }
+        .muted {
+          color: #94a3b8;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>PackBridge — Privacy Policy</h1>
+    <p class="muted">Last updated: April 2026</p>
+
+    <p>
+      PackBridge is a Shopify app that translates valid B2B orders into
+      downstream-safe pack units (each → inner → case → pallet) for ERP, EDI,
+      and warehouse systems. This policy explains what data PackBridge accesses,
+      what it stores, and what it does with that data.
+    </p>
+
+    <h2>What PackBridge accesses</h2>
+    <p>
+      When you install PackBridge on your Shopify store, it requests the
+      following read-only scopes:
+    </p>
+    <ul>
+      <li><code>read_orders</code> — to process B2B orders as they are created</li>
+      <li><code>read_products</code> — to mirror product and variant metadata for pack rules</li>
+      <li><code>read_companies</code> — to resolve rules scoped to a B2B company</li>
+      <li><code>read_draft_orders</code> — to support future draft-order workflows</li>
+      <li><code>read_customers</code> — required by Shopify to read the purchasing entity on a B2B order</li>
+    </ul>
+    <p>PackBridge does not request any write scopes. It does not modify your shop data.</p>
+
+    <h2>What PackBridge stores</h2>
+    <ul>
+      <li>Shop domain, plan, currency, and sync timestamps</li>
+      <li>Company and company-location identifiers and names (B2B only, no consumer PII)</li>
+      <li>Product and variant identifiers, SKUs, titles</li>
+      <li>Pack-rule configurations you create</li>
+      <li>
+        Normalization jobs and per-line-item events — order identifiers,
+        quantities, resolved rules, and delivery audit records
+      </li>
+      <li>
+        A per-shop signing secret used to sign outbound webhook payloads
+      </li>
+    </ul>
+
+    <h2>What PackBridge does NOT store</h2>
+    <ul>
+      <li>Customer names, emails, phone numbers, or addresses</li>
+      <li>Payment information</li>
+      <li>Any personally identifiable information (PII) belonging to end customers</li>
+    </ul>
+    <p>
+      PackBridge deals strictly with company-level B2B identifiers. Consumer
+      data is out of scope.
+    </p>
+
+    <h2>Where PackBridge sends data</h2>
+    <p>
+      When a B2B order is processed, PackBridge POSTs a signed JSON payload to
+      a webhook destination URL that <em>you</em> configure in the app
+      settings. Every request is signed with HMAC-SHA256 using your per-shop
+      signing secret. If you do not configure a destination URL, no outbound
+      delivery occurs.
+    </p>
+    <p>
+      PackBridge does not sell, share, or forward your data to any third
+      parties beyond the webhook destination you configure.
+    </p>
+
+    <h2>Data retention</h2>
+    <p>
+      PackBridge retains pack-rule configurations and normalization audit logs
+      for as long as the app is installed on your shop. When you uninstall
+      PackBridge, your Shopify session is deleted immediately. Cached catalog
+      and B2B metadata may persist for up to 30 days before being purged.
+    </p>
+
+    <h2>GDPR compliance</h2>
+    <p>
+      PackBridge subscribes to Shopify's mandatory compliance webhooks
+      (<code>customers/data_request</code>, <code>customers/redact</code>,
+      <code>shop/redact</code>). Because PackBridge stores no customer PII,
+      these requests are processed as no-ops with a confirmation response.
+    </p>
+
+    <h2>Security</h2>
+    <p>
+      Data is stored in a managed PostgreSQL database on a private network.
+      Access is restricted to the PackBridge application via credentials not
+      committed to source control. Webhook payloads are signed to allow you to
+      verify authenticity on receipt.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Questions? Email
+      <a href="mailto:support@packbridge.app">support@packbridge.app</a>.
+    </p>
+  </body>
+</html>
