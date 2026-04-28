@@ -27,8 +27,8 @@ The requested Shopify Dev MCP tool was not available in this Codex session, so t
 - Dev-store E2E validation passed for sync, UI rule create, CSV import, real B2B orders, HMAC-signed outbound payloads, Jobs UI, all three enforcement modes, non-divisible validation, and retry.
 - Demo seed data exists for `stocklockb.myshopify.com` via `npm run seed:demo`.
 - App Store screenshot assets exist in `docs/screenshots/`: seven 1600 x 900 PNGs, one 1600 x 900 feature banner, and one 1200 x 1200 placeholder icon.
-- Silent 60-second demo video exists locally at `docs/video/demo.mp4` and is ignored by git.
-- Narrated onboarding video exists locally at `docs/video/onboarding.mp4` and is ignored by git; captions are committed at `docs/video/onboarding.srt`.
+- Silent 60-second demo video exists locally at `docs/video/demo.mp4`, is ignored by git, and is uploaded to YouTube as an unlisted video: https://youtu.be/PxIUVxpoqJ4.
+- Narrated onboarding video exists locally at `docs/video/onboarding.mp4`, is ignored by git, and is uploaded to YouTube as an unlisted video: https://youtu.be/c2wql68aKgo; captions are committed at `docs/video/onboarding.srt`.
 
 ## Needs User Input
 

@@ -102,8 +102,10 @@ _Not used:_ Online Store, Checkout, Storefront API, Shopify Functions, POS.
 
 ## Video assets
 
-- Demo video: `docs/video/demo.mp4` locally; YouTube URL pending upload.
-- Onboarding video: `docs/video/onboarding.mp4` locally; YouTube URL pending upload.
+- Demo video: https://youtu.be/PxIUVxpoqJ4
+- Onboarding video: https://youtu.be/c2wql68aKgo
+- Local demo source: `docs/video/demo.mp4` (ignored by git).
+- Local onboarding source: `docs/video/onboarding.mp4` (ignored by git).
 - Onboarding captions: `docs/video/onboarding.srt`.
 
 ---
