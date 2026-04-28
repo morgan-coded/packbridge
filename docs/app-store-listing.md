@@ -87,7 +87,6 @@ $99/month · 14-day free trial
 - `read_orders`
 - `read_products`
 - `read_companies`
-- `read_draft_orders`
 - `read_customers` _(required to read the purchasing entity on a B2B order)_
 
 No write scopes. PackBridge does not modify shop data.

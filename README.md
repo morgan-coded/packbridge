@@ -110,7 +110,6 @@ PackBridge is read-only:
 - `read_orders` — process B2B orders
 - `read_products` — mirror variants for pack rules
 - `read_companies` — resolve company-scoped rules
-- `read_draft_orders` — future draft-order support
 - `read_customers` — read purchasing entity on B2B orders
 
 No write scopes.
