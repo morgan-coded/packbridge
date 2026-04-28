@@ -5,7 +5,6 @@ import type {
   LoaderFunctionArgs,
 } from "react-router";
 import { Link, useFetcher, useLoaderData, useRouteError } from "react-router";
-import { useAppBridge } from "@shopify/app-bridge-react";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 
 import { authenticate } from "../shopify.server";
@@ -137,6 +136,18 @@ interface ActionData {
   error?: string;
 }
 
+interface ShopifyToastApi {
+  toast?: {
+    show: (message: string, options?: { isError?: boolean }) => void;
+  };
+}
+
+declare global {
+  interface Window {
+    shopify?: ShopifyToastApi;
+  }
+}
+
 export const action = async ({
   request,
 }: ActionFunctionArgs): Promise<ActionData> => {
@@ -176,7 +187,6 @@ function ChecklistItem({
 export default function Index() {
   const data = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
-  const shopify = useAppBridge();
 
   const isSyncing =
     ["loading", "submitting"].includes(fetcher.state) &&
@@ -184,11 +194,13 @@ export default function Index() {
 
   useEffect(() => {
     if (fetcher.data?.ok) {
-      shopify.toast.show("Sync complete");
+      window.shopify?.toast?.show("Sync complete");
     } else if (fetcher.data && fetcher.data.ok === false) {
-      shopify.toast.show("Sync failed — see server logs", { isError: true });
+      window.shopify?.toast?.show("Sync failed — see server logs", {
+        isError: true,
+      });
     }
-  }, [fetcher.data, shopify]);
+  }, [fetcher.data]);
 
   const resync = () => fetcher.submit({}, { method: "POST" });
 

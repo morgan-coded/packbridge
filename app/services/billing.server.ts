@@ -56,9 +56,17 @@ export async function checkActiveSubscription(
  * billing approval URL — merchant approves, Shopify redirects back to the
  * app, and the subsequent page load will pass the gate.
  *
- * On dev stores the approval screen shows `(test)` next to the price.
+ * For local/dev environments we skip the gate entirely so the embedded app can
+ * load even when Shopify's Billing API is unavailable to non-public apps.
  */
 export async function requireBilling(billing: BillingContext): Promise<void> {
+  if (BILLING_IS_TEST) {
+    console.warn(
+      "[packbridge] Skipping billing gate because NODE_ENV is not production.",
+    );
+    return;
+  }
+
   await billing.require({
     plans: [PACKBRIDGE_PLAN],
     isTest: BILLING_IS_TEST,

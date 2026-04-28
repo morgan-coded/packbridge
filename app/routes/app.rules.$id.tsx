@@ -14,6 +14,10 @@ import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
 import { RuleForm } from "../components/RuleForm";
+import {
+  optionalFormString,
+  productScopeForRule,
+} from "../services/form-values.server";
 
 interface LoaderData {
   rule: {
@@ -124,10 +128,11 @@ export const action = async ({
     return redirect("/app/rules");
   }
 
-  const companyId = (form.get("companyId") as string) || null;
-  const companyLocationId = (form.get("companyLocationId") as string) || null;
-  const variantId = (form.get("variantId") as string) || null;
-  const productId = (form.get("productId") as string) || null;
+  const companyId = optionalFormString(form.get("companyId"));
+  const companyLocationId = optionalFormString(form.get("companyLocationId"));
+  const variantId = optionalFormString(form.get("variantId"));
+  const productId = optionalFormString(form.get("productId"));
+  const ruleProductId = productScopeForRule(variantId, productId);
   const packSizeRaw = (form.get("packSize") as string) || "";
   const downstreamUnitCode = (
     (form.get("downstreamUnitCode") as string) || ""
@@ -155,7 +160,7 @@ export const action = async ({
       companyId,
       companyLocationId,
       variantId,
-      productId: variantId ? productId : productId,
+      productId: ruleProductId,
       NOT: { id },
     },
   });
@@ -172,7 +177,7 @@ export const action = async ({
       companyId,
       companyLocationId: companyId ? companyLocationId : null,
       variantId,
-      productId: variantId ? productId : null,
+      productId: ruleProductId,
       packSize,
       downstreamUnitCode,
       enforcementMode,

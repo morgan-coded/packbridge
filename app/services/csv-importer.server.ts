@@ -1,5 +1,6 @@
 import Papa from "papaparse";
 import prisma from "../db.server";
+import { productScopeForRule } from "./form-values.server";
 
 /**
  * CSV rule import — parsing + validation kept strictly separate from
@@ -311,7 +312,7 @@ export async function executeImport(
           companyId: row.companyId,
           companyLocationId: row.companyLocationId,
           variantId: row.variantId,
-          productId: row.productId,
+          productId: productScopeForRule(row.variantId, row.productId),
           packSize: row.packSize!,
           downstreamUnitCode: row.downstreamUnitCode,
           enforcementMode: row.enforcementMode,
