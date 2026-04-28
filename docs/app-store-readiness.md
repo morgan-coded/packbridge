@@ -28,10 +28,12 @@ The requested Shopify Dev MCP tool was not available in this Codex session, so t
 - Demo seed data exists for `stocklockb.myshopify.com` via `npm run seed:demo`.
 - App Store screenshot assets exist in `docs/screenshots/`: seven 1600 x 900 PNGs, one 1600 x 900 feature banner, and one 1200 x 1200 placeholder icon.
 - Silent 60-second demo video exists locally at `docs/video/demo.mp4` and is ignored by git.
+- Narrated onboarding video exists locally at `docs/video/onboarding.mp4` and is ignored by git; captions are committed at `docs/video/onboarding.srt`.
 
 ## Needs User Input
 
 - App icon: replace `docs/screenshots/icon-1200.png` if final brand artwork differs from the placeholder PackBridge mark.
+- Onboarding voiceover: current video uses macOS `say` voice for v1; replace with a human narration if desired before launch.
 - Demo store URL and reviewer testing instructions.
 - Support email: confirm `support@packbridge.app` exists and is monitored.
 - Documentation URL: `https://packbridge.app/docs` is listed as "to be added"; provide or remove before submission.

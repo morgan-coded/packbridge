@@ -168,7 +168,7 @@ function endCard(): string {
       <div>
         <div class="mark" style="margin:0 auto 42px">PB</div>
         <h1>PackBridge</h1>
-        <p style="font-size:34px;margin-top:24px">$99/mo · 14-day free trial · packbridge.app</p>
+        <p style="font-size:34px;margin-top:24px">$99/mo - 14-day free trial - packbridge.app</p>
       </div>
     </div>`,
   );

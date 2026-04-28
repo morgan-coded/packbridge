@@ -22,6 +22,7 @@
     "seed:demo": "tsx scripts/seed-demo.ts",
     "screenshots:demo": "tsx scripts/render-screenshots.ts",
     "video:demo": "tsx scripts/render-demo-video.ts",
+    "video:onboarding": "tsx scripts/render-onboarding-video.ts",
     "typecheck": "react-router typegen && tsc --noEmit"
   },
   "type": "module",

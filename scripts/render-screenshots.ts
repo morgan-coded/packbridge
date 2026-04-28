@@ -459,7 +459,7 @@ function feature(data: Awaited<ReturnType<typeof loadData>>) {
     th { color:${colors.muted}; }
     .badge { border-radius:999px; padding:4px 9px; background:#e8f7ef; color:${colors.green}; font-weight:900; font-size:12px; }
   </style></head><body><div class="hero">
-    <section><div class="mark">PB</div><h1>Shopify B2B orders, translated for your ERP.</h1><p>PackBridge converts eaches into cases, inner packs, and pallets, then sends a signed webhook payload downstream.</p><div class="price">$99/mo · 14-day free trial</div></section>
+    <section><div class="mark">PB</div><h1>Shopify B2B orders, translated for your ERP.</h1><p>PackBridge converts eaches into cases, inner packs, and pallets, then sends a signed webhook payload downstream.</p><div class="price">$99/mo - 14-day free trial</div></section>
     <section class="dash"><div class="top"><strong>PackBridge dashboard</strong><span>stocklockb.myshopify.com</span></div><div class="grid">
       <div class="card"><div class="label">Active rules</div><div class="num">${data.rules.length}</div></div>
       <div class="card"><div class="label">Orders processed</div><div class="num">${data.jobs.length}</div></div>

@@ -103,7 +103,8 @@ _Not used:_ Online Store, Checkout, Storefront API, Shopify Functions, POS.
 ## Video assets
 
 - Demo video: `docs/video/demo.mp4` locally; YouTube URL pending upload.
-- Onboarding video: pending.
+- Onboarding video: `docs/video/onboarding.mp4` locally; YouTube URL pending upload.
+- Onboarding captions: `docs/video/onboarding.srt`.
 
 ---
 
