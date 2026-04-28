@@ -98,7 +98,7 @@ npx shopify app dev --tunnel-url https://your-tunnel-url:8080
 | `npm run dev` | Start dev server via Shopify CLI |
 | `npm run build` | Production build |
 | `npm run setup` | Generate Prisma client + run migrations |
-| `npm test` | Run Vitest (32 tests) |
+| `npm test` | Run Vitest |
 | `npm run test:watch` | Vitest in watch mode |
 | `npm run typecheck` | TypeScript type check |
 | `npm run lint` | ESLint |
@@ -116,9 +116,9 @@ No write scopes.
 
 ## Billing
 
-$99/month with a 14-day free trial. Billing is gated at the app layout level — every `/app/*` page checks for an active subscription before rendering.
+$99/month with a 14-day free trial. Billing is gated at the app layout level in production — every `/app/*` page checks for an active subscription before rendering.
 
-Dev stores see a test charge approval screen (`BILLING_IS_TEST` defaults to `true` when `NODE_ENV !== "production"`).
+Local/dev environments skip the billing gate so embedded previews work before public distribution. Set `NODE_ENV=production` on the production host to enforce billing.
 
 ## Pack rule resolution
 
@@ -170,11 +170,12 @@ The signing secret is visible in the app's Settings page. Retries: up to 3 attem
 
 ## Tests
 
-32 tests across 3 files:
+37 tests across 4 files:
 
 - **rule-resolver.test.ts** (21) — priority ordering, date filtering, active flag, validateLineItem
 - **normalizer.test.ts** (5) — computeOverallStatus (hold/completed/mixed/empty)
 - **outbound.test.ts** (6) — HMAC signing, payload hashing, determinism
+- **form-values.test.ts** (5) — Shopify form-value normalization and rule scoping
 
 ```bash
 npm test
@@ -188,7 +189,7 @@ npm test
 4. Run `npm run setup` to apply migrations
 5. Run `npm run build && npm start`
 
-See the [Shopify deployment docs](https://shopify.dev/docs/apps/launch/deployment) for hosting options.
+See [docs/deploy.md](docs/deploy.md) for the PackBridge runbook and the [Shopify deployment docs](https://shopify.dev/docs/apps/launch/deployment) for hosting options.
 
 ## License
 

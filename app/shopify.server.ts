@@ -23,11 +23,16 @@ export const PACKBRIDGE_PLAN = "PackBridge Monthly";
 // Dev stores can only approve test charges, so we default to `true`.
 export const BILLING_IS_TEST = process.env.NODE_ENV !== "production";
 
+const configuredScopes = process.env.SCOPES?.split(",")
+  .map((scope) => scope.trim())
+  .filter(Boolean);
+const customShopDomain = process.env.SHOP_CUSTOM_DOMAIN?.trim();
+
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
   apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
   apiVersion: PACKBRIDGE_API_VERSION,
-  scopes: process.env.SCOPES?.split(","),
+  scopes: configuredScopes,
   appUrl: process.env.SHOPIFY_APP_URL || "",
   authPathPrefix: "/auth",
   // PrismaSessionStorage pulls in a transitive @shopify/shopify-api that
@@ -88,9 +93,7 @@ const shopify = shopifyApp({
       }
     },
   },
-  ...(process.env.SHOP_CUSTOM_DOMAIN
-    ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
-    : {}),
+  ...(customShopDomain ? { customShopDomains: [customShopDomain] } : {}),
 });
 
 export default shopify;
