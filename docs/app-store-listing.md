@@ -100,6 +100,13 @@ _Not used:_ Online Store, Checkout, Storefront API, Shopify Functions, POS.
 
 ---
 
+## Video assets
+
+- Demo video: `docs/video/demo.mp4` locally; YouTube URL pending upload.
+- Onboarding video: pending.
+
+---
+
 ## Screenshots to upload
 
 In this order:
