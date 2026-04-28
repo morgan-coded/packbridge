@@ -2,7 +2,7 @@
 
 client_id = "bbd66c1ef0abaa715ac6249008fb553e"
 name = "PackBridge"
-application_url = "https://example.com"
+application_url = "https://packbridge-dev.morganlabs.org"
 embedded = true
 
 [build]
@@ -11,9 +11,29 @@ automatically_update_urls_on_dev = true
 [webhooks]
 api_version = "2026-07"
 
+  [[webhooks.subscriptions]]
+  topics = [ "orders/create" ]
+  uri = "/webhooks/orders/create"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "customers/data_request" ]
+  uri = "/webhooks/customers/data_request"
+
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "customers/redact" ]
+  uri = "/webhooks/customers/redact"
+
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "shop/redact" ]
+  uri = "/webhooks/shop/redact"
+
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_companies,read_customers,read_orders,read_products"
+scopes = "read_orders,read_products,read_companies,read_customers"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [ "https://packbridge-dev.morganlabs.org/auth/callback" ]

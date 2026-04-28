@@ -1,6 +1,6 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "44c3d749bf3178e865af09d88eb2d91f"
+client_id = "bbd66c1ef0abaa715ac6249008fb553e"
 name = "PackBridge"
 application_url = "https://packbridge-dev.morganlabs.org"
 embedded = true
@@ -37,28 +37,4 @@ api_version = "2026-07"
 scopes = "read_orders,read_products,read_companies,read_customers"
 
 [auth]
-redirect_urls = [ "https://packbridge-dev.morganlabs.org/api/auth" ]
-
-[product.metafields.app.demo_info]
-type = "single_line_text_field"
-name = "Demo Source Info"
-description = "Tracks products created by the Shopify app template for development"
-
-  [product.metafields.app.demo_info.access]
-  admin = "merchant_read_write"
-
-[metaobjects.app.example]
-name = "Example"
-description = "An example metaobject definition created by this template"
-
-  [metaobjects.app.example.access]
-  admin = "merchant_read_write"
-
-[metaobjects.app.example.fields.title]
-name = "Title"
-type = "single_line_text_field"
-required = true
-
-[metaobjects.app.example.fields.description]
-name = "Description"
-type = "multi_line_text_field"
+redirect_urls = [ "https://packbridge-dev.morganlabs.org/auth/callback" ]

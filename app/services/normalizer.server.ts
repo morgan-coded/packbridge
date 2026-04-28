@@ -23,6 +23,22 @@ export interface NormalizationResult {
   skipped?: boolean;
 }
 
+export interface NormalizationOrderContext {
+  id: string;
+  name: string;
+  company: { id: string; name: string } | null;
+  location: { id: string; name: string } | null;
+  lineItems: Array<{
+    id: string;
+    quantity: number;
+    variant: {
+      id: string;
+      sku: string | null;
+      product: { id: string; title?: string | null };
+    } | null;
+  }>;
+}
+
 /**
  * Compute the job-level status from per-line-item event outcomes.
  *
@@ -85,8 +101,60 @@ export async function normalizeOrder(
     throw new Error(`Order ${orderGid} not found`);
   }
 
-  const company = order.purchasingEntity?.company ?? null;
-  const location = order.purchasingEntity?.location ?? null;
+  return persistNormalization(shopDomain, idempotencyKey, {
+    id: order.id,
+    name: order.name,
+    company: order.purchasingEntity?.company ?? null,
+    location: order.purchasingEntity?.location ?? null,
+    lineItems: order.lineItems,
+  });
+}
+
+export async function normalizeOrderFromContext(
+  shopDomain: string,
+  orderId: string,
+  context: NormalizationOrderContext,
+): Promise<NormalizationResult> {
+  const orderGid = toOrderGid(orderId);
+  const idempotencyKey = `normalize:${orderGid}`;
+
+  const existing = await prisma.normalizationJob.findUnique({
+    where: { idempotencyKey },
+    include: { events: true },
+  });
+
+  if (existing && (existing.status === "completed" || existing.status === "held")) {
+    return {
+      job: existing,
+      events: existing.events,
+      overallStatus: existing.status as OverallStatus,
+    };
+  }
+
+  if (existing && existing.status === "failed") {
+    await prisma.normalizationEvent.deleteMany({
+      where: { normalizationJobId: existing.id },
+    });
+    await prisma.normalizationJob.update({
+      where: { id: existing.id },
+      data: {
+        status: "processing",
+        errorSummary: null,
+        processedAt: null,
+      },
+    });
+  }
+
+  return persistNormalization(shopDomain, idempotencyKey, context);
+}
+
+async function persistNormalization(
+  shopDomain: string,
+  idempotencyKey: string,
+  context: NormalizationOrderContext,
+): Promise<NormalizationResult> {
+  const company = context.company;
+  const location = context.location;
 
   if (!company) {
     // Not B2B — record a skipped job so we have an audit trail.
@@ -94,8 +162,8 @@ export async function normalizeOrder(
       where: { idempotencyKey },
       create: {
         shopDomain,
-        orderId: orderGid,
-        orderName: order.name,
+        orderId: context.id,
+        orderName: context.name,
         companyId: null,
         companyLocationId: null,
         status: "skipped",
@@ -118,8 +186,8 @@ export async function normalizeOrder(
     where: { idempotencyKey },
     create: {
       shopDomain,
-      orderId: orderGid,
-      orderName: order.name,
+      orderId: context.id,
+      orderName: context.name,
       companyId,
       companyLocationId,
       status: "processing",
@@ -129,7 +197,7 @@ export async function normalizeOrder(
       status: "processing",
       companyId,
       companyLocationId,
-      orderName: order.name,
+      orderName: context.name,
       errorSummary: null,
     },
   });
@@ -137,7 +205,7 @@ export async function normalizeOrder(
   try {
     // Step 4 — process each line item
     const events: NormalizationEvent[] = [];
-    for (const li of order.lineItems) {
+    for (const li of context.lineItems) {
       if (!li.variant) {
         // Order had a deleted variant — record as no_rule with a synthetic
         // error so we don't lose the line.

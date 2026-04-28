@@ -62,8 +62,6 @@ PackBridge is not a WMS, an ERP connector, a bundle app, or a checkout enforceme
 - Full audit trail for every order processed
 - Clean admin UI built on Shopify Polaris
 
-$99/month · 14-day free trial
-
 ---
 
 ## Key benefits (3 bullet points for listing)
@@ -84,10 +82,10 @@ $99/month · 14-day free trial
 
 ## Permissions requested (scopes)
 
-- `read_orders`
-- `read_products`
-- `read_companies`
-- `read_customers` _(required to read the purchasing entity on a B2B order)_
+- `read_orders` — read B2B order line items and quantities after order creation
+- `read_products` — mirror products and variants so merchants can assign pack rules by SKU
+- `read_companies` — mirror B2B companies and locations for company-specific pack rules
+- `read_customers` — read the purchasing entity on B2B orders so PackBridge can resolve the correct company/location context
 
 No write scopes. PackBridge does not modify shop data.
 
@@ -118,5 +116,5 @@ In this order:
 ## Support
 
 - **Support email:** support@packbridge.app
-- **Privacy policy:** https://packbridge.app/privacy
+- **Privacy policy:** https://packbridge.app/privacy.html
 - **Documentation:** https://packbridge.app/docs _(to be added)_

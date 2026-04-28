@@ -1,7 +1,17 @@
 import type { ActionFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
-import { normalizeOrder } from "../services/normalizer.server";
+import {
+  normalizeOrder,
+  normalizeOrderFromContext,
+} from "../services/normalizer.server";
 import { deliverPayload } from "../services/outbound.server";
+import {
+  toCompanyGid,
+  toCompanyLocationGid,
+  toOrderGid,
+  toProductGid,
+  toVariantGid,
+} from "../lib/gid.server";
 
 /**
  * orders/create — Phase 3 live pipeline.
@@ -23,6 +33,13 @@ interface OrdersCreatePayload {
     id?: number | string;
     location_id?: number | string;
   } | null;
+  line_items?: Array<{
+    id?: number | string;
+    quantity?: number;
+    sku?: string | null;
+    variant_id?: number | string | null;
+    product_id?: number | string | null;
+  }>;
 }
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -55,7 +72,57 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   try {
-    const result = await normalizeOrder(admin, shop, String(orderId));
+    let result;
+    try {
+      result = await normalizeOrder(admin, shop, String(orderId));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      const looksLikeScopeFailure =
+        message.includes("Access denied") ||
+        message.includes("read_customers") ||
+        message.includes("purchasingEntity");
+
+      if (!looksLikeScopeFailure) {
+        throw error;
+      }
+
+      console.warn(
+        `[packbridge] GraphQL B2B enrichment failed for order ${orderId}; falling back to webhook payload context: ${message}`,
+      );
+
+      result = await normalizeOrderFromContext(shop, String(orderId), {
+        id: toOrderGid(String(orderId)),
+        name: body.name ?? `#${orderId}`,
+        company: body.company?.id
+          ? {
+              id: toCompanyGid(body.company.id),
+              name: "Unknown company",
+            }
+          : null,
+        location: body.company?.location_id
+          ? {
+              id: toCompanyLocationGid(body.company.location_id),
+              name: "Unknown location",
+            }
+          : null,
+        lineItems: (body.line_items ?? []).map((line, index) => ({
+          id: line.id ? String(line.id) : `${orderId}:${index}`,
+          quantity: line.quantity ?? 0,
+          variant:
+            line.variant_id && line.product_id
+              ? {
+                  id: toVariantGid(line.variant_id),
+                  sku: line.sku ?? null,
+                  product: {
+                    id: toProductGid(line.product_id),
+                    title: null,
+                  },
+                }
+              : null,
+        })),
+      });
+    }
+
     console.log(
       `[packbridge] order ${orderId} normalized: ${result.overallStatus} (${result.events.length} events)`,
     );
