@@ -1,6 +1,5 @@
 import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
-import { useEffect } from "react";
-import { Outlet, useLoaderData, useNavigate, useRouteError } from "react-router";
+import { Outlet, useLoaderData, useRouteError } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { AppProvider } from "@shopify/shopify-app-react-router/react";
 
@@ -19,53 +18,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return { apiKey: process.env.SHOPIFY_API_KEY || "" };
 };
 
-function ensureScript(id: string, src: string): HTMLScriptElement {
-  let script = document.getElementById(id) as HTMLScriptElement | null;
-
-  if (!script) {
-    script = document.createElement("script");
-    script.id = id;
-    script.src = src;
-    script.async = false;
-    document.head.appendChild(script);
-  }
-
-  return script;
-}
-
-function AppBridgeScript({ apiKey }: { apiKey: string }) {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const appBridge = ensureScript(
-      "packbridge-app-bridge",
-      "https://cdn.shopify.com/shopifycloud/app-bridge.js",
-    );
-    appBridge.dataset.apiKey = apiKey;
-
-    const handleNavigate = (event: Event) => {
-      const href = (event.target as HTMLElement)?.getAttribute("href");
-      if (href) {
-        navigate(href);
-      }
-    };
-
-    document.addEventListener("shopify:navigate", handleNavigate);
-
-    return () => {
-      document.removeEventListener("shopify:navigate", handleNavigate);
-    };
-  }, [apiKey, navigate]);
-
-  return null;
-}
-
 export default function App() {
   const { apiKey } = useLoaderData<typeof loader>();
 
   return (
-    <AppProvider embedded={false}>
-      <AppBridgeScript apiKey={apiKey} />
+    <AppProvider embedded apiKey={apiKey}>
       <s-app-nav>
         <s-link href="/app">Dashboard</s-link>
         <s-link href="/app/rules">Rules</s-link>
