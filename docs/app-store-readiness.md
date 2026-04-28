@@ -14,40 +14,42 @@ The requested Shopify Dev MCP tool was not available in this Codex session, so t
 
 ## Done
 
-- App listing draft exists in `docs/app-store-listing.md`.
-- Pricing copy is isolated to the Pricing section: PackBridge Monthly, $99 USD every 30 days, 14-day free trial.
-- Scope list is least-privilege: `read_orders`, `read_products`, `read_companies`, `read_customers`.
-- Scope justification copy is present for all requested scopes.
-- Embedded app uses Shopify Admin UI and GraphQL Admin API paths; no REST Admin API usage was found in app code.
-- GDPR routes exist for `customers/data_request`, `customers/redact`, and `shop/redact`.
-- `shopify.app.toml` declares mandatory compliance webhook subscriptions.
-- `shop/redact` now purges shop-scoped PackBridge data instead of logging a no-op.
-- `public/privacy.html` exists.
-- `docker build .` passes locally with Docker Engine 29.4.1 / Colima on macOS arm64.
-- Dev-store E2E validation passed for sync, UI rule create, CSV import, real B2B orders, HMAC-signed outbound payloads, Jobs UI, all three enforcement modes, non-divisible validation, and retry.
-- Demo seed data exists for `stocklockb.myshopify.com` via `npm run seed:demo`.
-- App Store screenshot assets exist in `docs/screenshots/`: seven 1600 x 900 PNGs, one 1600 x 900 feature banner, and one 1200 x 1200 placeholder icon.
-- Silent 60-second demo video exists locally at `docs/video/demo.mp4`, is ignored by git, and is uploaded to YouTube as an unlisted video: https://youtu.be/PxIUVxpoqJ4.
-- Narrated onboarding video exists locally at `docs/video/onboarding.mp4`, is ignored by git, and is uploaded to YouTube as an unlisted video: https://youtu.be/c2wql68aKgo; captions are committed at `docs/video/onboarding.srt`.
+- ✅ App listing draft exists in `docs/app-store-listing.md`.
+- ✅ Pricing copy is isolated to the Pricing section: PackBridge Monthly, $99 USD every 30 days, 14-day free trial.
+- ✅ Scope list is least-privilege: `read_orders`, `read_products`, `read_companies`, `read_customers`.
+- ✅ Scope justification copy is present for all requested scopes.
+- ✅ Embedded app uses Shopify Admin UI and GraphQL Admin API paths; no REST Admin API usage was found in app code.
+- ✅ GDPR routes exist for `customers/data_request`, `customers/redact`, and `shop/redact`.
+- ✅ `shopify.app.toml` declares mandatory compliance webhook subscriptions.
+- ✅ `shop/redact` now purges shop-scoped PackBridge data instead of logging a no-op.
+- ✅ `public/privacy.html` exists.
+- ✅ `docker build .` passes locally with Docker Engine 29.4.1 / Colima on macOS arm64.
+- ✅ Dev-store E2E validation passed for sync, UI rule create, CSV import, real B2B orders, HMAC-signed outbound payloads, Jobs UI, all three enforcement modes, non-divisible validation, and retry.
+- ✅ Demo seed data exists for `stocklockb.myshopify.com` via `npm run seed:demo`.
+- ✅ App Store screenshot assets exist in `docs/screenshots/`: seven 1600 x 900 PNGs, one 1600 x 900 feature banner, and one 1200 x 1200 placeholder icon.
+- ✅ Listing media keeps pricing out of screenshots, the feature banner, the app icon, and the demo video.
+- ✅ Silent 60-second demo video exists locally at `docs/video/demo.mp4`, is ignored by git, and is uploaded to YouTube as an unlisted video: https://youtu.be/eolSf1iutSM.
+- ✅ Narrated onboarding video exists locally at `docs/video/onboarding.mp4`, is ignored by git, and is uploaded to YouTube as an unlisted video: https://youtu.be/c2wql68aKgo; captions are committed at `docs/video/onboarding.srt`.
 
 ## Needs User Input
 
-- App icon: replace `docs/screenshots/icon-1200.png` if final brand artwork differs from the placeholder PackBridge mark.
-- Onboarding voiceover: current video uses macOS `say` voice for v1; replace with a human narration if desired before launch.
-- Demo store URL and reviewer testing instructions.
-- Support email: confirm `support@packbridge.app` exists and is monitored.
-- Documentation URL: `https://packbridge.app/docs` is listed as "to be added"; provide or remove before submission.
-- Privacy URL: confirm production serves `https://packbridge.app/privacy.html`.
-- Partner Dashboard contact email: add `app-submissions@shopify.com` and `noreply@shopify.com` to allowed senders.
-- Protected customer data access: confirm whether Shopify requires an access request for `read_customers`; if so, submit the request with the purchasing-entity justification.
+- ⚠️ App icon: replace `docs/screenshots/icon-1200.png` if final brand artwork differs from the placeholder PackBridge mark.
+- ⚠️ Onboarding voiceover: current video uses macOS `say` voice for v1; replace with a human narration if desired before launch.
+- ⚠️ Demo store URL and reviewer testing instructions.
+- ⚠️ Support email: confirm `support@packbridge.app` exists and is monitored.
+- ⚠️ Documentation URL: `https://packbridge.app/docs` is listed as "to be added"; provide or remove before submission.
+- ⚠️ Privacy URL: confirm production serves `https://packbridge.app/privacy.html`.
+- ⚠️ Partner Dashboard contact email: add `app-submissions@shopify.com` and `noreply@shopify.com` to allowed senders.
+- ⚠️ Protected customer data access: confirm whether Shopify requires an access request for `read_customers`; if so, submit the request with the purchasing-entity justification.
 
 ## Needs Final Verification
 
-- Production host URL and Shopify Partner app URL are not set yet.
-- Billing must be tested once deployed with `NODE_ENV=production` so production charges are not accidentally created as test charges.
-- OAuth install/reinstall flow must be tested against the production host and redirect URLs.
-- App Bridge script placement should be rechecked in production. Shopify requires the latest App Bridge; PackBridge currently loads `app-bridge.js` after hydration to avoid embedded preview crashes.
-- Confirm the App Store listing images contain no pricing, testimonials, stats, Shopify trademarks, browser chrome, desktop backgrounds, duplicate screenshots, or logo-only screenshots.
+- ❌ Production host URL and Shopify Partner app URL are not set yet.
+- ❌ Billing must be tested once deployed with `NODE_ENV=production` so production charges are not accidentally created as test charges.
+- ❌ OAuth install/reinstall flow must be tested against the production host and redirect URLs.
+- ⚠️ App Bridge script placement should be rechecked in production. Shopify requires the latest App Bridge; PackBridge currently loads `app-bridge.js` after hydration to avoid embedded preview crashes.
+- ✅ App Store listing images were regenerated and verified to avoid pricing, testimonials, stats, Shopify trademarks, browser chrome, desktop backgrounds, duplicate screenshots, and logo-only screenshots.
+- ❌ Shopify App Store submission has not been clicked; final submit remains gated until production deploy and smoke test are complete.
 
 ## Reviewer Notes To Prepare
 

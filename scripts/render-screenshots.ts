@@ -446,7 +446,8 @@ function feature(data: Awaited<ReturnType<typeof loadData>>) {
     .mark { width:76px; height:76px; border-radius:18px; background:#f8c44f; color:${colors.navy}; display:grid; place-items:center; font-size:31px; font-weight:900; margin-bottom:34px; }
     h1 { font-size:72px; line-height:1.02; margin:0 0 24px; }
     p { color:#d9e8ee; font-size:26px; line-height:1.35; margin:0; }
-    .price { margin-top:34px; display:inline-flex; gap:14px; align-items:center; padding:15px 20px; border:1px solid rgba(255,255,255,.25); border-radius:8px; color:#fff; font-weight:800; font-size:22px; }
+    .chips { display:flex; gap:12px; flex-wrap:wrap; margin-top:34px; }
+    .chip { display:inline-flex; align-items:center; height:48px; padding:0 16px; border:1px solid rgba(255,255,255,.25); border-radius:8px; color:#fff; font-weight:800; font-size:22px; }
     .dash { background:#f6f8fb; border-radius:16px; padding:24px; color:${colors.ink}; box-shadow:0 38px 90px rgba(0,0,0,.32); }
     .top { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
     .top strong { font-size:26px; }
@@ -459,7 +460,7 @@ function feature(data: Awaited<ReturnType<typeof loadData>>) {
     th { color:${colors.muted}; }
     .badge { border-radius:999px; padding:4px 9px; background:#e8f7ef; color:${colors.green}; font-weight:900; font-size:12px; }
   </style></head><body><div class="hero">
-    <section><div class="mark">PB</div><h1>Shopify B2B orders, translated for your ERP.</h1><p>PackBridge converts eaches into cases, inner packs, and pallets, then sends a signed webhook payload downstream.</p><div class="price">$99/mo - 14-day free trial</div></section>
+    <section><div class="mark">PB</div><h1>Shopify B2B orders, translated for your ERP.</h1><p>PackBridge converts eaches into cases, inner packs, and pallets, then sends a signed webhook payload downstream.</p><div class="chips"><span class="chip">CASE</span><span class="chip">INNER</span><span class="chip">PALLET</span><span class="chip">HMAC signed</span></div></section>
     <section class="dash"><div class="top"><strong>PackBridge dashboard</strong><span>stocklockb.myshopify.com</span></div><div class="grid">
       <div class="card"><div class="label">Active rules</div><div class="num">${data.rules.length}</div></div>
       <div class="card"><div class="label">Orders processed</div><div class="num">${data.jobs.length}</div></div>
