@@ -25,11 +25,12 @@ The requested Shopify Dev MCP tool was not available in this Codex session, so t
 - `public/privacy.html` exists.
 - `docker build .` passes locally with Docker Engine 29.4.1 / Colima on macOS arm64.
 - Dev-store E2E validation passed for sync, UI rule create, CSV import, real B2B orders, HMAC-signed outbound payloads, Jobs UI, all three enforcement modes, non-divisible validation, and retry.
+- Demo seed data exists for `stocklockb.myshopify.com` via `npm run seed:demo`.
+- App Store screenshot assets exist in `docs/screenshots/`: seven 1600 x 900 PNGs, one 1600 x 900 feature banner, and one 1200 x 1200 placeholder icon.
 
 ## Needs User Input
 
-- App icon: 1200 x 1200 PNG or JPEG, matching the icon in the Developer Dashboard and App Store listing.
-- Screenshots: actual focused UI screenshots for Dashboard, Rules list, Create rule, CSV import preview, Job detail, and Settings.
+- App icon: replace `docs/screenshots/icon-1200.png` if final brand artwork differs from the placeholder PackBridge mark.
 - Demo screencast: English or English-subtitled walkthrough showing onboarding and the core setup flow.
 - Demo store URL and reviewer testing instructions.
 - Support email: confirm `support@packbridge.app` exists and is monitored.

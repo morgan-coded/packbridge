@@ -104,12 +104,18 @@ _Not used:_ Online Store, Checkout, Storefront API, Shopify Functions, POS.
 
 In this order:
 
-1. **Dashboard** — hero + quick stats + recent jobs
-2. **Rules list** — 3–5 rules with mixed scopes, badges, filters visible
-3. **Create rule form** — form filled out, company + location + SKU picked
-4. **CSV import preview** — mix of valid and error rows, status badges
-5. **Job detail** — line items with pass/warn/hold results, delivery card
-6. **Settings** — webhook URL field + signing secret + regenerate button
+1. `docs/screenshots/01-dashboard.png` — Dashboard, quick stats, and recent jobs
+2. `docs/screenshots/02-pack-rules.png` — Rules list with mixed scopes and enforcement modes
+3. `docs/screenshots/03-rule-form.png` — Create rule form with company, location, and SKU selected
+4. `docs/screenshots/04-csv-import.png` — CSV import completion and import history
+5. `docs/screenshots/05-jobs-list.png` — Jobs list with completed, held, and mixed statuses
+6. `docs/screenshots/06-job-detail.png` — Job detail with event timeline and redacted delivery URL
+7. `docs/screenshots/07-settings.png` — Settings with placeholder webhook URL and masked signing secret
+
+Additional assets:
+
+- `docs/screenshots/feature-1600x900.png` — feature banner
+- `docs/screenshots/icon-1200.png` — placeholder app icon; replace if final brand artwork differs
 
 ---
 
