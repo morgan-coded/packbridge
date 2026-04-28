@@ -23,6 +23,7 @@ The requested Shopify Dev MCP tool was not available in this Codex session, so t
 - `shopify.app.toml` declares mandatory compliance webhook subscriptions.
 - `shop/redact` now purges shop-scoped PackBridge data instead of logging a no-op.
 - `public/privacy.html` exists.
+- `docker build .` passes locally with Docker Engine 29.4.1 / Colima on macOS arm64.
 - Dev-store E2E validation passed for sync, UI rule create, CSV import, real B2B orders, HMAC-signed outbound payloads, Jobs UI, all three enforcement modes, non-divisible validation, and retry.
 
 ## Needs User Input
@@ -40,7 +41,6 @@ The requested Shopify Dev MCP tool was not available in this Codex session, so t
 ## Needs Final Verification
 
 - Production host URL and Shopify Partner app URL are not set yet.
-- Docker build is still unverified on this machine because no container runtime is installed.
 - Billing must be tested once deployed with `NODE_ENV=production` so production charges are not accidentally created as test charges.
 - OAuth install/reinstall flow must be tested against the production host and redirect URLs.
 - App Bridge script placement should be rechecked in production. Shopify requires the latest App Bridge; PackBridge currently loads `app-bridge.js` after hydration to avoid embedded preview crashes.
