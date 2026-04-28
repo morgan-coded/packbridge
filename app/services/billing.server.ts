@@ -1,5 +1,6 @@
 import {
   authenticate,
+  BILLING_GATE_ENABLED,
   BILLING_IS_TEST,
   PACKBRIDGE_PLAN,
 } from "../shopify.server";
@@ -12,8 +13,9 @@ import {
  * redirect to Shopify's confirmation URL for us. The plan itself is declared
  * in `shopify.server.ts` (trialDays: 14, $99/month).
  *
- * Dev/test stores automatically receive a test charge approval screen because
- * `BILLING_IS_TEST` is derived from `NODE_ENV`.
+ * Local/dev environments skip the billing gate entirely. Production keeps the
+ * gate enabled and can request Shopify test charges with
+ * `SHOPIFY_BILLING_TEST=true` during App Store review/dev-store validation.
  */
 
 // Infer the billing context type from the template so we don't have to export
@@ -60,7 +62,7 @@ export async function checkActiveSubscription(
  * load even when Shopify's Billing API is unavailable to non-public apps.
  */
 export async function requireBilling(billing: BillingContext): Promise<void> {
-  if (BILLING_IS_TEST) {
+  if (!BILLING_GATE_ENABLED) {
     console.warn(
       "[packbridge] Skipping billing gate because NODE_ENV is not production.",
     );

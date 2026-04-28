@@ -122,6 +122,9 @@ services:
   - key: SHOPIFY_APP_URL
     scope: RUN_TIME
     value: ${APP_URL}
+  - key: SHOPIFY_BILLING_TEST
+    scope: RUN_TIME
+    value: "true"
   - key: DATABASE_URL
     scope: RUN_AND_BUILD_TIME
     value: ${packbridge-db.DATABASE_URL}
@@ -141,6 +144,10 @@ Notes:
 
 - `${APP_URL}` is the App Platform bindable variable for the generated default
   app URL. That avoids hard-coding a custom domain before launch.
+- `SHOPIFY_BILLING_TEST=true` is intended for App Store review/dev-store
+  validation only. Keep it enabled before submission so Shopify can approve a
+  test subscription on review stores; remove it or set it to `false` before
+  opening the app to live merchants.
 - The previous PackBridge DO spec did not include `SHOPIFY_APP_URL`, which is
   why the app crashed on boot after a successful build.
 - `npm run setup` runs Prisma generate and migrations before the web service

@@ -19,9 +19,13 @@ const PACKBRIDGE_API_VERSION = "2026-07" as ApiVersion;
 // Single plan for MVP. Export so routes can reference it by name.
 export const PACKBRIDGE_PLAN = "PackBridge Monthly";
 
-// Flip to `false` before production submission (or gate on NODE_ENV).
-// Dev stores can only approve test charges, so we default to `true`.
-export const BILLING_IS_TEST = process.env.NODE_ENV !== "production";
+export const BILLING_GATE_ENABLED = process.env.NODE_ENV === "production";
+
+// Keep the billing gate enabled in production, but allow pre-launch App Store
+// review/dev-store installs to approve Shopify test charges.
+export const BILLING_IS_TEST =
+  process.env.SHOPIFY_BILLING_TEST?.toLowerCase() === "true" ||
+  !BILLING_GATE_ENABLED;
 
 const configuredScopes = process.env.SCOPES?.split(",")
   .map((scope) => scope.trim())
