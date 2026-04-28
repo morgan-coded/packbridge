@@ -2,7 +2,7 @@
   align-items: center;
   display: flex;
   justify-content: center;
-  height: 100%;
+  min-height: 100%;
   width: 100%;
   text-align: center;
   padding: 1rem;
@@ -14,60 +14,70 @@
   margin: 0;
 }
 
+.eyebrow {
+  color: #0f766e;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.heading {
+  font-size: 2.4rem;
+  line-height: 1.1;
+}
+
 .text {
   font-size: 1.2rem;
-  padding-bottom: 2rem;
+  line-height: 1.5;
+  margin: 0 auto;
+  max-width: 46rem;
 }
 
 .content {
   display: grid;
   gap: 2rem;
-}
-
-.form {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin: 0 auto;
-  gap: 1rem;
-}
-
-.label {
-  display: grid;
-  gap: 0.2rem;
-  max-width: 20rem;
-  text-align: left;
-  font-size: 1rem;
-}
-
-.input {
-  padding: 0.4rem;
-}
-
-.button {
-  padding: 0.4rem;
+  max-width: 60rem;
 }
 
 .list {
   list-style: none;
   padding: 0;
-  padding-top: 3rem;
   margin: 0;
-  display: flex;
+  display: grid;
   gap: 2rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .list > li {
-  max-width: 20rem;
   text-align: left;
+  border: 1px solid #d7dde4;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.note {
+  color: #4b5563;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.note a {
+  color: #0f766e;
+  font-weight: 700;
 }
 
 @media only screen and (max-width: 50rem) {
   .list {
-    display: block;
+    grid-template-columns: 1fr;
   }
 
   .list > li {
     padding-bottom: 1rem;
+  }
+
+  .heading {
+    font-size: 1.9rem;
   }
 }

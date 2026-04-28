@@ -1,7 +1,5 @@
 import type { LoaderFunctionArgs } from "react-router";
-import { redirect, Form, useLoaderData } from "react-router";
-
-import { login } from "../../shopify.server";
+import { redirect } from "react-router";
 
 import styles from "./styles.module.css";
 
@@ -12,45 +10,41 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     throw redirect(`/app?${url.searchParams.toString()}`);
   }
 
-  return { showForm: Boolean(login) };
+  return null;
 };
 
 export default function App() {
-  const { showForm } = useLoaderData<typeof loader>();
-
   return (
     <div className={styles.index}>
       <div className={styles.content}>
-        <h1 className={styles.heading}>A short heading about [your app]</h1>
+        <p className={styles.eyebrow}>PackBridge for Shopify B2B</p>
+        <h1 className={styles.heading}>
+          Translate B2B orders into ERP-safe pack units.
+        </h1>
         <p className={styles.text}>
-          A tagline about [your app] that describes your value proposition.
+          PackBridge turns valid Shopify B2B order quantities into downstream
+          units like cases, inner packs, and pallets, then delivers a signed
+          payload to your ERP, EDI, or warehouse endpoint.
         </p>
-        {showForm && (
-          <Form className={styles.form} method="post" action="/auth/login">
-            <label className={styles.label}>
-              <span>Shop domain</span>
-              <input className={styles.input} type="text" name="shop" />
-              <span>e.g: my-shop-domain.myshopify.com</span>
-            </label>
-            <button className={styles.button} type="submit">
-              Log in
-            </button>
-          </Form>
-        )}
         <ul className={styles.list}>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Customer-specific rules.</strong> Resolve pack logic by
+            company, location, product, or variant.
           </li>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Audit-ready jobs.</strong> Track every normalized line item,
+            warning, hold, and outbound delivery.
           </li>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Signed webhooks.</strong> Send HMAC-signed JSON to the
+            systems your operations team already uses.
           </li>
         </ul>
+        <p className={styles.note}>
+          Install and open PackBridge from Shopify Admin or the Shopify App
+          Store. For privacy details, see <a href="/privacy.html">the privacy
+          policy</a>.
+        </p>
       </div>
     </div>
   );

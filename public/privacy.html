@@ -129,7 +129,8 @@
       PackBridge subscribes to Shopify's mandatory compliance webhooks
       (<code>customers/data_request</code>, <code>customers/redact</code>,
       <code>shop/redact</code>). Because PackBridge stores no customer PII,
-      these requests are processed as no-ops with a confirmation response.
+      customer data requests are processed as no-ops with a confirmation
+      response. Shop redaction requests purge shop-scoped PackBridge data.
     </p>
 
     <h2>Security</h2>
