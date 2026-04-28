@@ -12,8 +12,9 @@ Read-only inspection on 2026-04-28 found:
 - Existing App Platform app: `packbridge`
   - App ID: `7473fb2a-16a6-4e55-93e6-498320121671`
   - Region: `nyc`
-  - No live/default ingress yet.
-  - Prior deployments failed because `SHOPIFY_APP_URL` was missing at runtime.
+  - Live/default ingress: `https://packbridge-dy937.ondigitalocean.app`
+  - Prior deployments failed because `SHOPIFY_APP_URL` was missing at runtime;
+    the active deployment now sets it from the App Platform URL.
 - Existing Managed Postgres cluster: `packbridge-db`
   - Cluster ID: `705fde3d-3426-4212-8be1-112fe4228b6a`
   - Engine/version: PostgreSQL 16
@@ -49,7 +50,7 @@ StockLock's `basic-xxs` alias).
 
 ## Proposed PackBridge App Spec
 
-This is the spec shape to apply to the existing `packbridge` app after approval.
+This is the spec shape applied to the existing `packbridge` app.
 Secret values must be supplied from the existing DigitalOcean app secrets or set
 locally during the `doctl apps update` flow; do not commit plaintext secrets.
 
@@ -148,7 +149,7 @@ Notes:
   order webhooks in the web service; StockLock has a worker, but PackBridge does
   not need one yet.
 
-## Deployment Steps After Approval
+## Deployment Steps
 
 1. Confirm `main` is ready and pushed to GitHub. The local checkout may be ahead
    of `origin/main`; App Platform deploys from GitHub, not local files.

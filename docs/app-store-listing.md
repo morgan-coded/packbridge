@@ -132,5 +132,5 @@ Additional assets:
 ## Support
 
 - **Support email:** support@packbridge.app
-- **Privacy policy:** https://packbridge.app/privacy.html
-- **Documentation:** https://packbridge.app/docs _(to be added)_
+- **Privacy policy:** https://packbridge-dy937.ondigitalocean.app/privacy.html
+- **Documentation:** README and onboarding video for v1; public docs site to follow.

@@ -2,7 +2,7 @@
 
 client_id = "bbd66c1ef0abaa715ac6249008fb553e"
 name = "PackBridge"
-application_url = "https://packbridge-dev.morganlabs.org"
+application_url = "https://packbridge-dy937.ondigitalocean.app"
 embedded = true
 
 [build]
@@ -36,4 +36,4 @@ api_version = "2026-07"
 scopes = "read_orders,read_products,read_companies,read_customers"
 
 [auth]
-redirect_urls = [ "https://packbridge-dev.morganlabs.org/auth/callback" ]
+redirect_urls = [ "https://packbridge-dy937.ondigitalocean.app/auth/callback" ]
