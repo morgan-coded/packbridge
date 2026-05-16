@@ -1,0 +1,215 @@
+1
+00:00:00,000 --> 00:00:01,640
+Welcome to PackBridge.
+
+2
+00:00:01,640 --> 00:00:06,720
+This walkthrough shows a new Shopify B2B merchant how to go from install to the first normalized
+
+3
+00:00:06,720 --> 00:00:08,800
+order in about 5 minutes.
+
+4
+00:00:08,800 --> 00:00:12,400
+Start in the Shopify App Store and install PackBridge into the store.
+
+5
+00:00:12,400 --> 00:00:16,640
+Shopify sends you through OAuth so you can approve the read-only permissions PackBridge
+
+6
+00:00:16,640 --> 00:00:22,800
+needs, orders, products, companies, and customers for B2B purchasing context.
+
+7
+00:00:22,800 --> 00:00:28,040
+PackBridge does not request write scopes, and it does not change orders, products, or
+
+8
+00:00:28,040 --> 00:00:30,080
+customers in Shopify.
+
+9
+00:00:30,080 --> 00:00:33,040
+After OAuth, you land on the PackBridge dashboard.
+
+10
+00:00:33,040 --> 00:00:35,280
+The first job is the initial sync.
+
+11
+00:00:35,280 --> 00:00:41,400
+PackBridge mirrors B2B companies, company locations, products, and variants into its own database
+
+12
+00:00:41,400 --> 00:00:44,200
+so the admin can resolve pack rules quickly.
+
+13
+00:00:44,200 --> 00:00:49,800
+The dashboard confirms the latest sync time, active rule count, processed orders, and recent
+
+14
+00:00:49,800 --> 00:00:51,640
+normalization jobs.
+
+15
+00:00:51,640 --> 00:00:53,920
+Next, create your first pack rule.
+
+16
+00:00:53,920 --> 00:00:56,300
+A rule can apply to all companies.
+
+17
+00:00:56,300 --> 00:01:01,360
+One company, one company location, a product, or a specific variant.
+
+18
+00:01:01,360 --> 00:01:03,640
+Choose the most specific scope you need.
+
+19
+00:01:03,640 --> 00:01:04,920
+Set the pack size.
+
+20
+00:01:04,920 --> 00:01:11,360
+Then choose the downstream unit code your ERP expects, such as case, inner, or pallet.
+
+21
+00:01:11,360 --> 00:01:15,160
+Enforcement mode controls what happens when the ordered quantity is not divisible by the
+
+22
+00:01:15,160 --> 00:01:16,480
+pack size.
+
+23
+00:01:16,480 --> 00:01:21,660
+Warn flags the order, hold marks the job for review, normalize only emits the translation
+
+24
+00:01:21,660 --> 00:01:23,140
+and records the warning.
+
+25
+00:01:23,140 --> 00:01:29,660
+For larger catalogs, use the CSV import flow, download the template, fill in company name,
+
+26
+00:01:29,660 --> 00:01:35,980
+company location name, SKU, pack size, downstream unit code, and enforcement mode, then upload
+
+27
+00:01:35,980 --> 00:01:36,980
+the file.
+
+28
+00:01:36,980 --> 00:01:40,060
+PackBridge previews every row before writing rules.
+
+29
+00:01:40,060 --> 00:01:45,260
+Valid rows are ready to import, and invalid rows explain exactly what needs to be fixed,
+
+30
+00:01:45,260 --> 00:01:49,780
+such as an unknown SKU or a location that does not belong to the selected company.
+
+31
+00:01:49,780 --> 00:01:51,500
+Now configure delivery.
+
+32
+00:01:51,500 --> 00:01:58,380
+On settings, paste the HTTPS endpoint for your ERP, EDI, middleware, or warehouse system.
+
+33
+00:01:58,380 --> 00:02:03,100
+PackBridge signs every outbound request with the signing secret shown on this page.
+
+34
+00:02:03,100 --> 00:02:08,100
+Your server verifies the X-PackBridge-Signature header by computing an HMAC over the raw
+
+35
+00:02:08,100 --> 00:02:11,380
+request body. With rules and settings in place.
+
+36
+00:02:11,380 --> 00:02:13,900
+Place a B2B test order in Shopify.
+
+37
+00:02:13,900 --> 00:02:16,060
+When the orders create webhook arrives.
+
+38
+00:02:16,060 --> 00:02:19,300
+PackBridge resolves the purchasing company and location.
+
+39
+00:02:19,300 --> 00:02:24,940
+Chooses the most specific matching rule, validates divisibility, and writes a normalization event
+
+40
+00:02:24,940 --> 00:02:26,580
+for each line item.
+
+41
+00:02:26,580 --> 00:02:28,780
+Open the jobs page to audit the result.
+
+42
+00:02:28,780 --> 00:02:33,060
+The list shows completed, held, mixed, and failed jobs.
+
+43
+00:02:33,060 --> 00:02:39,580
+Open a job detail page to see the order summary, line item inputs, resolved output quantities,
+
+44
+00:02:39,580 --> 00:02:43,380
+downstream units, validation warnings, and delivery status.
+
+45
+00:02:43,380 --> 00:02:48,500
+If the endpoint returns a temporary 500, PackBridge retries and records the successful
+
+46
+00:02:48,500 --> 00:02:49,500
+recovery.
+
+47
+00:02:49,500 --> 00:02:52,380
+Finally, verify the payload at your endpoint.
+
+48
+00:02:52,380 --> 00:02:57,780
+A normalized line contains the original input quantity, the resolved pack size, the output
+
+49
+00:02:57,780 --> 00:03:03,020
+quantity, the downstream unit, and the order context your downstream system needs.
+
+50
+00:03:03,020 --> 00:03:08,140
+The delivery ID and HMAC signature make the payload traceable and verifiable.
+
+51
+00:03:08,140 --> 00:03:13,900
+That is the core PackBridge setup: install, sync, create or import rules, configure a signed
+
+52
+00:03:13,900 --> 00:03:19,700
+webhook, place a B2B order, and confirm the ERP receives clean pack-unit JSON.
+
+53
+00:03:19,700 --> 00:03:25,300
+For help, contact support at support at packbridge.app, or use the documentation link from the
+
+54
+00:03:25,300 --> 00:03:25,800
+listing.

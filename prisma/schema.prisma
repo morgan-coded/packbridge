@@ -1,0 +1,202 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Shopify session storage (required by @shopify/shopify-app-session-storage-prisma)
+// ---------------------------------------------------------------------------
+
+model Session {
+  id                  String    @id
+  shop                String
+  state               String
+  isOnline            Boolean   @default(false)
+  scope               String?
+  expires             DateTime?
+  accessToken         String
+  userId              BigInt?
+  firstName           String?
+  lastName            String?
+  email               String?
+  accountOwner        Boolean   @default(false)
+  locale              String?
+  collaborator        Boolean?  @default(false)
+  emailVerified       Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+// ---------------------------------------------------------------------------
+// Per-shop metadata
+// ---------------------------------------------------------------------------
+
+model Shop {
+  id                     String    @id // shop domain, e.g. "my-store.myshopify.com"
+  name                   String?
+  plan                   String?
+  currency               String?
+  webhookUrl             String?   // merchant's outbound destination
+  signingSecret          String?   // HMAC key for outbound payload signatures
+  defaultEnforcementMode String    @default("warn")
+  syncedAt               DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Cached Shopify B2B + catalog data (read-only mirrors)
+// ---------------------------------------------------------------------------
+
+model SyncedCompany {
+  id          String    @id // Shopify GID, e.g. "gid://shopify/Company/123"
+  shopDomain  String
+  name        String
+  externalId  String?
+  syncedAt    DateTime  @default(now())
+
+  locations   SyncedCompanyLocation[]
+
+  @@index([shopDomain])
+}
+
+model SyncedCompanyLocation {
+  id          String    @id // Shopify GID
+  companyId   String
+  shopDomain  String
+  name        String
+  syncedAt    DateTime  @default(now())
+
+  company     SyncedCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([shopDomain])
+  @@index([companyId])
+}
+
+model SyncedVariant {
+  id           String   @id // Shopify GID, e.g. "gid://shopify/ProductVariant/456"
+  shopDomain   String
+  productId    String   // Shopify product GID
+  sku          String?
+  title        String?
+  productTitle String?
+  syncedAt     DateTime @default(now())
+
+  @@index([shopDomain])
+  @@index([productId])
+}
+
+// ---------------------------------------------------------------------------
+// Pack rules — the core translation definitions
+// ---------------------------------------------------------------------------
+
+model PackRule {
+  id                 String    @id @default(cuid())
+  shopDomain         String
+  companyId          String?   // Shopify company GID (nullable for shop-wide rules)
+  companyLocationId  String?   // Shopify company location GID
+  variantId          String?   // Shopify variant GID
+  productId          String?   // Shopify product GID
+  packSize           Int
+  downstreamUnitCode String
+  enforcementMode    String    @default("warn") // "warn" | "block" | "silent"
+  active             Boolean   @default(true)
+  effectiveStart     DateTime?
+  effectiveEnd       DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([shopDomain, companyId, variantId])
+  @@index([shopDomain, productId])
+}
+
+// ---------------------------------------------------------------------------
+// Normalization pipeline (Phase 3; schema ready now)
+// ---------------------------------------------------------------------------
+
+model NormalizationJob {
+  id                String    @id @default(cuid())
+  shopDomain        String
+  orderId           String
+  orderName         String
+  companyId         String?
+  companyLocationId String?
+  status            String    @default("pending") // pending | running | succeeded | failed
+  idempotencyKey    String    @unique
+  errorSummary      String?
+  createdAt         DateTime  @default(now())
+  processedAt       DateTime?
+
+  events     NormalizationEvent[]
+  deliveries OutboundDelivery[]
+
+  @@index([shopDomain, orderId])
+  @@index([status])
+}
+
+model NormalizationEvent {
+  id                  String   @id @default(cuid())
+  normalizationJobId  String
+  lineItemId          String
+  variantId           String
+  sku                 String?
+  inputQuantity       Int
+  resolvedRuleId      String?
+  packSize            Int?     // copied from resolved rule for stable payloads
+  outputQuantity      Decimal?
+  outputUnit          String?
+  resultStatus        String   // pass | warn | hold | no_rule
+  errorCode           String?
+  remainder           Int?     // non-null when NOT_DIVISIBLE
+  enforcementMode     String?
+  createdAt           DateTime @default(now())
+
+  normalizationJob    NormalizationJob @relation(fields: [normalizationJobId], references: [id], onDelete: Cascade)
+
+  @@index([normalizationJobId])
+}
+
+model OutboundDelivery {
+  id                 String    @id @default(cuid())
+  normalizationJobId String
+  destinationType    String    @default("webhook") // webhook | edi | erp
+  destinationRef     String?
+  payloadHash        String
+  deliveryStatus     String    @default("pending") // pending | delivered | failed
+  retryCount         Int       @default(0)
+  lastError          String?
+  createdAt          DateTime  @default(now())
+  deliveredAt        DateTime?
+
+  normalizationJob   NormalizationJob @relation(fields: [normalizationJobId], references: [id], onDelete: Cascade)
+
+  @@index([normalizationJobId])
+  @@index([deliveryStatus])
+}
+
+// ---------------------------------------------------------------------------
+// Rule import (CSV upload) audit (Phase 2)
+// ---------------------------------------------------------------------------
+
+model RuleImportJob {
+  id           String    @id @default(cuid())
+  shopDomain   String
+  fileName     String
+  totalRows    Int
+  successCount Int       @default(0)
+  errorCount   Int       @default(0)
+  errors       Json?
+  status       String    @default("pending") // pending | running | succeeded | failed
+  createdAt    DateTime  @default(now())
+  completedAt  DateTime?
+
+  @@index([shopDomain])
+}
