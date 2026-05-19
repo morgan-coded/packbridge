@@ -43,7 +43,7 @@ export default function App() {
         <p className={styles.note}>
           Install and open PackBridge from Shopify Admin or the Shopify App
           Store. For privacy details, see <a href="/privacy.html">the privacy
-          policy</a>.
+          policy</a>. For setup, see <a href="/docs.html">the documentation</a>.
         </p>
       </div>
     </div>

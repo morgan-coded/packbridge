@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PackBridge FAQ</title>
+    <style>
+      body { color: #102033; font-family: Arial, sans-serif; line-height: 1.55; margin: 0; }
+      main { margin: 0 auto; max-width: 820px; padding: 48px 20px; }
+      h1, h2 { line-height: 1.2; }
+      a { color: #064f9e; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>PackBridge FAQ</h1>
+      <h2>Does PackBridge change Shopify orders?</h2>
+      <p>No. PackBridge reads Shopify B2B orders, applies your pack-unit rules, and sends a downstream payload. It does not rewrite Shopify orders in the current release.</p>
+
+      <h2>Is PackBridge an ERP?</h2>
+      <p>No. PackBridge is a focused translation layer between Shopify B2B orders and the ERP, EDI, or WMS system you already operate.</p>
+
+      <h2>How are webhooks signed?</h2>
+      <p>Outbound payloads are signed with an HMAC signature using your PackBridge signing secret. Your receiving endpoint can verify the signature before accepting the payload.</p>
+
+      <h2>What happens if delivery fails?</h2>
+      <p>PackBridge records the failed delivery, keeps the job visible in the audit trail, and retries according to its delivery policy. You can inspect held or failed jobs from the app.</p>
+
+      <h2>How do I get help?</h2>
+      <p>Email <a href="mailto:support@packbridge.app">support@packbridge.app</a>.</p>
+    </main>
+  </body>
+</html>

@@ -15,7 +15,7 @@ The requested Shopify Dev MCP tool was not available in this Codex session, so t
 ## Done
 
 - ✅ App listing draft exists in `docs/app-store-listing.md`.
-- ✅ Pricing copy is isolated to the Pricing section: PackBridge Monthly, $99 USD every 30 days, 14-day free trial.
+- ✅ Pricing copy is isolated to the Pricing section: PackBridge Launch, $49 USD every 30 days, 14-day free trial; legacy/pro PackBridge Monthly remains $99 USD every 30 days.
 - ✅ Scope list is least-privilege: `read_orders`, `read_products`, `read_companies`, `read_customers`.
 - ✅ Scope justification copy is present for all requested scopes.
 - ✅ Embedded app uses Shopify Admin UI and GraphQL Admin API paths; no REST Admin API usage was found in app code.
@@ -37,7 +37,7 @@ The requested Shopify Dev MCP tool was not available in this Codex session, so t
 - ⚠️ Onboarding voiceover: current video uses macOS `say` voice for v1; replace with a human narration if desired before launch.
 - ⚠️ Demo store URL and reviewer testing instructions.
 - ⚠️ Support email: confirm `support@packbridge.app` exists and is monitored.
-- ⚠️ Documentation URL: `https://packbridge.app/docs` is listed as "to be added"; provide or remove before submission.
+- ✅ Documentation URL can point to the production app's `/docs.html`; FAQ can point to `/faq.html`.
 - ⚠️ Privacy URL: confirm production serves `https://packbridge.app/privacy.html`.
 - ⚠️ Partner Dashboard contact email: add `app-submissions@shopify.com` and `noreply@shopify.com` to allowed senders.
 - ⚠️ Protected customer data access: confirm whether Shopify requires an access request for `read_customers`; if so, submit the request with the purchasing-entity justification.

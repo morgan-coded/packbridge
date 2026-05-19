@@ -2,7 +2,8 @@ import {
   authenticate,
   BILLING_GATE_ENABLED,
   BILLING_IS_TEST,
-  PACKBRIDGE_PLAN,
+  PACKBRIDGE_BILLING_PLANS,
+  PACKBRIDGE_DEFAULT_PLAN,
 } from "../shopify.server";
 
 /**
@@ -11,7 +12,7 @@ import {
  * Instead of issuing raw `appSubscriptionCreate` GraphQL, we lean on the
  * template's `billing.require` / `billing.request` flow which handles the
  * redirect to Shopify's confirmation URL for us. The plan itself is declared
- * in `shopify.server.ts` (trialDays: 14, $99/month).
+ * in `shopify.server.ts` (Launch: $49/month, legacy/pro: $99/month).
  *
  * Local/dev environments skip the billing gate entirely. Production keeps the
  * gate enabled and can request Shopify test charges with
@@ -38,7 +39,7 @@ export async function checkActiveSubscription(
   billing: BillingContext,
 ): Promise<{ hasActivePayment: boolean; subscriptions: ActiveSubscription[] }> {
   const check = await billing.check({
-    plans: [PACKBRIDGE_PLAN],
+    plans: [...PACKBRIDGE_BILLING_PLANS],
     isTest: BILLING_IS_TEST,
   });
   return {
@@ -70,9 +71,12 @@ export async function requireBilling(billing: BillingContext): Promise<void> {
   }
 
   await billing.require({
-    plans: [PACKBRIDGE_PLAN],
+    plans: [...PACKBRIDGE_BILLING_PLANS],
     isTest: BILLING_IS_TEST,
     onFailure: async () =>
-      billing.request({ plan: PACKBRIDGE_PLAN, isTest: BILLING_IS_TEST }),
+      billing.request({
+        plan: PACKBRIDGE_DEFAULT_PLAN,
+        isTest: BILLING_IS_TEST,
+      }),
   });
 }

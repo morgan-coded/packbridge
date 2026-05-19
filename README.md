@@ -116,7 +116,7 @@ No write scopes.
 
 ## Billing
 
-$99/month with a 14-day free trial. Billing is gated at the app layout level in production — every `/app/*` page checks for an active subscription before rendering.
+$49/month launch pricing with a 14-day free trial for new installs. The legacy/pro $99/month plan remains accepted for active subscriptions. Billing is gated at the app layout level in production — every `/app/*` page checks for an active subscription before rendering.
 
 Local/dev environments skip the billing gate so embedded previews work before public distribution. Set `NODE_ENV=production` on the production host to enforce billing. During pre-launch App Store review or dev-store validation, set `SHOPIFY_BILLING_TEST=true` so the production app still requires billing but requests Shopify test charges.
 
