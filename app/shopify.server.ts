@@ -17,8 +17,15 @@ import { ensureShopSettings } from "./services/shop-settings.server";
 // version by default.
 const PACKBRIDGE_API_VERSION = "2026-07" as ApiVersion;
 
-// Single plan for MVP. Export so routes can reference it by name.
+// Keep the legacy $99 plan active for existing subscriptions, and request
+// the $49 Launch plan for new installs.
+export const PACKBRIDGE_LAUNCH_PLAN = "PackBridge Launch";
 export const PACKBRIDGE_PLAN = "PackBridge Monthly";
+export const PACKBRIDGE_BILLING_PLANS = [
+  PACKBRIDGE_LAUNCH_PLAN,
+  PACKBRIDGE_PLAN,
+] as const;
+export const PACKBRIDGE_DEFAULT_PLAN = PACKBRIDGE_LAUNCH_PLAN;
 
 export const BILLING_GATE_ENABLED = process.env.NODE_ENV === "production";
 
@@ -49,6 +56,16 @@ const shopify = shopifyApp({
   sessionStorage: new PrismaSessionStorage(prisma) as any,
   distribution: AppDistribution.AppStore,
   billing: {
+    [PACKBRIDGE_LAUNCH_PLAN]: {
+      trialDays: 14,
+      lineItems: [
+        {
+          amount: 49,
+          currencyCode: "USD",
+          interval: BillingInterval.Every30Days,
+        },
+      ],
+    },
     [PACKBRIDGE_PLAN]: {
       trialDays: 14,
       lineItems: [

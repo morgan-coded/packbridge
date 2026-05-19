@@ -74,9 +74,10 @@ PackBridge is not a WMS, an ERP connector, a bundle app, or a checkout enforceme
 
 ## Pricing
 
-- **Plan:** PackBridge Monthly
-- **Price:** $99.00 USD / 30 days
+- **Plan:** PackBridge Launch
+- **Price:** $49.00 USD / 30 days
 - **Free trial:** 14 days
+- **Legacy/Pro plan:** PackBridge Monthly, $99.00 USD / 30 days
 
 ---
 
@@ -132,5 +133,6 @@ Additional assets:
 ## Support
 
 - **Support email:** support@packbridge.app
-- **Privacy policy:** https://packbridge.example.com/privacy.html
-- **Documentation:** README and onboarding video for v1; public docs site to follow.
+- **Privacy policy:** `/privacy.html` in the production app; use `https://packbridge.app/privacy.html` once the branded domain is verified.
+- **Documentation:** `/docs.html` in the production app, plus onboarding video for v1.
+- **FAQ:** `/faq.html` in the production app.

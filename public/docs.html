@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PackBridge Documentation</title>
+    <style>
+      body { color: #102033; font-family: Arial, sans-serif; line-height: 1.55; margin: 0; }
+      main { margin: 0 auto; max-width: 860px; padding: 48px 20px; }
+      h1, h2 { line-height: 1.2; }
+      code { background: #eef2f7; border-radius: 4px; padding: 2px 4px; }
+      pre { background: #102033; color: #f8fafc; overflow: auto; padding: 16px; }
+      a { color: #064f9e; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>PackBridge Documentation</h1>
+      <p>PackBridge translates Shopify B2B order quantities into pack units your ERP, EDI, or warehouse system can consume. It is for merchants whose downstream systems expect cases, inners, pallets, or other operational units instead of raw eaches.</p>
+
+      <h2>Setup</h2>
+      <ol>
+        <li>Install PackBridge from the Shopify App Store.</li>
+        <li>Open PackBridge in Shopify Admin and confirm billing.</li>
+        <li>Create pack-unit rules for the companies, locations, products, or variants that need translation.</li>
+        <li>Add your outbound webhook endpoint in Settings.</li>
+        <li>Place or replay a test B2B order and confirm the signed payload in your receiving system.</li>
+      </ol>
+
+      <h2>Shopify Permissions</h2>
+      <p>PackBridge reads order, product, company, and location data needed to resolve pack-unit rules. It writes PackBridge-owned settings, jobs, and audit records in its own database. It does not rewrite Shopify orders unless a future release explicitly adds and documents that capability.</p>
+
+      <h2>Pack-Unit Rules</h2>
+      <p>Rules can map ordered quantities into operational units such as cases, inners, and pallets. Rules may be scoped by company, company location, product, or variant so B2B customers can keep different pack logic without changing storefront pricing.</p>
+
+      <h2>Example</h2>
+      <p>Input Shopify order line:</p>
+      <pre><code>{ "sku": "SKU-CASE-12", "quantity": 24, "company": "Acme Wholesale" }</code></pre>
+      <p>Output webhook payload:</p>
+      <pre><code>{
+  "orderId": "gid://shopify/Order/123",
+  "lines": [
+    { "sku": "SKU-CASE-12", "orderedEaches": 24, "packUnit": "case", "packQuantity": 2 }
+  ]
+}</code></pre>
+
+      <h2>Signed Webhooks</h2>
+      <p>PackBridge signs outbound webhook payloads with an HMAC signature so your ERP/WMS endpoint can verify the message came from PackBridge and was not modified in transit. Keep the signing secret private and rotate it from Settings if your receiving endpoint changes ownership.</p>
+
+      <h2>Retry Behavior</h2>
+      <p>If webhook delivery fails, PackBridge records the failure on the job and retries according to the app's delivery policy. Failed and held jobs remain visible in the audit trail for review.</p>
+
+      <h2>Billing</h2>
+      <p>Launch pricing is $49/month with a 14-day trial for new installs. The $99/month PackBridge Monthly plan remains supported for existing or Pro customers.</p>
+
+      <h2>Uninstall</h2>
+      <p>Uninstall PackBridge from Shopify Admin. Shopify sends an uninstall webhook, and PackBridge stops processing new orders for that shop. Contact support if you need retained PackBridge job records removed earlier than the normal retention period.</p>
+
+      <h2>Support</h2>
+      <p>Email <a href="mailto:support@packbridge.app">support@packbridge.app</a>.</p>
+    </main>
+  </body>
+</html>

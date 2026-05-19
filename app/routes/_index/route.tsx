@@ -39,6 +39,8 @@ export default function App() {
           <a href="#workflow">Workflow</a>
           <a href="#trust">Trust</a>
           <a href="#fit">Fit</a>
+          <a href="/docs.html">Docs</a>
+          <a href="/faq.html">FAQ</a>
           <a href="/privacy.html">Privacy</a>
         </nav>
       </header>
