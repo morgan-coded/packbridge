@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="PackBridge demo showing Shopify B2B order lines translated into ERP-ready pack units with signed webhook delivery."
+    />
+    <title>PackBridge Demo</title>
+    <style>
+      body { color: #102033; font-family: Arial, sans-serif; line-height: 1.55; margin: 0; }
+      main { margin: 0 auto; max-width: 960px; padding: 48px 20px; }
+      h1, h2 { line-height: 1.2; }
+      h2 { margin-top: 2rem; }
+      a { color: #064f9e; }
+      .step { border: 1px solid #d8e0ea; border-radius: 8px; margin: 18px 0; padding: 18px; }
+      .label { color: #526173; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; }
+      code { background: #eef2f7; border-radius: 4px; padding: 2px 4px; }
+      pre { background: #102033; border-radius: 8px; color: #f8fafc; overflow: auto; padding: 16px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p><a href="/docs.html">Documentation</a> / Demo</p>
+      <h1>Translate Shopify B2B order lines into ERP-ready pack units.</h1>
+      <p>This demo uses sample data to show how PackBridge reads a Shopify B2B order, applies merchant-owned pack rules, sends a signed payload, and keeps an audit trail. PackBridge does not rewrite Shopify order data in the current release.</p>
+
+      <section class="step">
+        <div class="label">1. Shopify B2B order line</div>
+        <h2>Raw order quantity</h2>
+        <p>A customer orders 24 eaches for a SKU that the warehouse fulfills as cases of 12.</p>
+        <pre><code>{
+  "orderId": "gid://shopify/Order/1001",
+  "company": "Acme Wholesale",
+  "location": "Dallas Distribution",
+  "line": {
+    "sku": "COFFEE-BAG-12PK",
+    "quantity": 24
+  }
+}</code></pre>
+      </section>
+
+      <section class="step">
+        <div class="label">2. Pack rule</div>
+        <h2>Company and SKU-specific translation</h2>
+        <p>The rule keeps storefront ordering simple while giving the ERP the pack unit it expects.</p>
+        <pre><code>{
+  "scope": "company_location + sku",
+  "company": "Acme Wholesale",
+  "location": "Dallas Distribution",
+  "sku": "COFFEE-BAG-12PK",
+  "unit": "case",
+  "eachesPerUnit": 12,
+  "deliveryMode": "signed_webhook"
+}</code></pre>
+      </section>
+
+      <section class="step">
+        <div class="label">3. ERP/WMS payload</div>
+        <h2>Translated pack units</h2>
+        <p>PackBridge preserves the original ordered eaches and adds the operational pack quantity for downstream systems.</p>
+        <pre><code>{
+  "orderId": "gid://shopify/Order/1001",
+  "company": "Acme Wholesale",
+  "lines": [
+    {
+      "sku": "COFFEE-BAG-12PK",
+      "orderedEaches": 24,
+      "packUnit": "case",
+      "packQuantity": 2
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section class="step">
+        <div class="label">4. Signed webhook</div>
+        <h2>Payload verification</h2>
+        <p>Outbound requests include a timestamp and HMAC signature so the receiving endpoint can verify the source and detect payload changes.</p>
+        <pre><code>POST /packbridge/orders
+x-packbridge-timestamp: 2026-05-20T14:30:00Z
+x-packbridge-signature: sha256=sample-signature-for-demo
+content-type: application/json</code></pre>
+      </section>
+
+      <section class="step">
+        <div class="label">5. Retry and audit trail</div>
+        <h2>Operational evidence</h2>
+        <ul>
+          <li>10:30 AM - Order received from Shopify.</li>
+          <li>10:30 AM - Pack rule matched Acme Wholesale and COFFEE-BAG-12PK.</li>
+          <li>10:31 AM - First webhook attempt timed out.</li>
+          <li>10:33 AM - Retry delivered with a verified 200 response.</li>
+        </ul>
+      </section>
+
+      <h2>Support</h2>
+      <p>Email <a href="mailto:support@packbridge.app">support@packbridge.app</a> for setup help with sample rules or webhook verification.</p>
+    </main>
+  </body>
+</html>
