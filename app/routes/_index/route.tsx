@@ -59,8 +59,11 @@ export default function App() {
               or other pack units.
             </p>
             <div className={styles.actions}>
-              <a className={styles.primaryAction} href="/app">
-                Open PackBridge
+              <a
+                className={styles.primaryAction}
+                href="https://apps.shopify.com/packbridge"
+              >
+                Install on Shopify
               </a>
               <a className={styles.secondaryAction} href="mailto:support@packbridge.app">
                 Talk to support
